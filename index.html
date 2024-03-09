@@ -1,20 +1,322 @@
 <!DOCTYPE html>
 <html lang="en">
 
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="krutilka.css">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio of Kamolgks</title>
+  <link rel="shortcut icon"
+    href="https://pngset.com/images/ranime-logo-high-resolution-reddit-anime-comics-book-manga-helmet-transparent-png-1612963.png"
+    type="image/x-icon">
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 
+
 <body>
-    <div class="loader">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
+  <main>
+    <aside class="sidebar" data-sidebar>
+      <div class="sidebar-info">
+        <figure class="avatar-box">
+          <img src="./assets/images/ava_1.jpg" alt="Kamoliddin Tukhtaboev" width="80">
+        </figure>
+        <div class="info-content">
+          <h1 class="name" title="Kamoliddin Tukhtaboev">Kamoliddin Tukhtaboev</h1>
+          <p class="title">Developer</p>
+        </div>
+        <button class="info_more-btn" data-sidebar-btn>
+          <span>Show Contacts</span>
+          <ion-icon name="chevron-down"></ion-icon>
+        </button>
+      </div>
+      <div class="sidebar-info_more">
+        <div class="separator"></div>
+        <ul class="contacts-list">
+          <li class="contact-item">
+            <div class="icon-box">
+              <ion-icon name="mail-outline"></ion-icon>
+            </div>
+            <div class="contact-info">
+              <p class="contact-title">Email</p>
+              <a href="mailto:kamolgks@gmail.com" class="contact-link">kamolgks@gmail.com</a>
+            </div>
+          </li>
+          <li class="contact-item">
+            <div class="icon-box">
+              <ion-icon name="paper-plane-outline"></ion-icon>
+            </div>
+            <div class="contact-info">
+              <p class="contact-title">Telegram</p>
+              <a href="https://t.me/kamolgks" class="contact-link">kamolgks</a>
+            </div>
+          </li>
+          <li class="contact-item">
+            <div class="icon-box">
+              <ion-icon name="calendar-outline"></ion-icon>
+            </div>
+            <div class="contact-info">
+              <p class="contact-title">Birthday</p>
+              <time datetime="2007-03-18">March 18, 2007</time>
+            </div>
+          </li>
+        </ul>
+        <div class="separator"></div>
+        <ul class="social-list">
+          <li class="social-item">
+            <a href="https://instagram.com/kamolgks/" class="social-link">
+              <ion-icon name="logo-instagram"></ion-icon>
+            </a>
+          </li>
+          <li class="social-item">
+            <a href="https://github.com/kamolgks/" class="social-link">
+              <ion-icon name="logo-github"></ion-icon>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </aside>
+    <div class="main-content">
+      <nav class="navbar">
+        <ul class="navbar-list">
+          <li class="navbar-item">
+            <button class="navbar-link  active" data-nav-link="about">About</button>
+          </li>
+          <li class="navbar-item">
+            <button class="navbar-link" data-nav-link="resume">Resume</button>
+          </li>
+        </ul>
+      </nav>
+      <article class="about active" data-page="about">
+        <header>
+          <h2 class="h2 article-title">About me</h2>
+        </header>
+        <section class="about-text">
+          <p>
+            I am a back-end and front-end developer with a total experience of 4 years.
+            I create modern websites and server side for them.
+            I am a python developer and create telegram bots and various scripts on any topics.
+            I love my work and do it with joy and accuracy.
+          </p>
+          <p>
+            At the moment I work as a freelancer and I am open to offers with different tasks.
+            I am ready to learn new technologies and develop in my field.
+          </p>
+        </section>
+        <section class="service">
+          <h3 class="h3 service-title">What i'm doing</h3>
+          <ul class="service-list">
+            <li class="service-item">
+              <div class="service-icon-box">
+                <img src="./assets/images/icon-design.svg" alt="design icon" width="40">
+              </div>
+              <div class="service-content-box">
+                <h4 class="h4 service-item-title">Web design</h4>
+                <p class="service-item-text">
+                  The most modern and high-quality design made at a professional level.
+                </p>
+              </div>
+            </li>
+            <li class="service-item">
+              <div class="service-icon-box">
+                <img src="./assets/images/icon-dev.svg" alt="Web development icon" width="40">
+              </div>
+              <div class="service-content-box">
+                <h4 class="h4 service-item-title">Back-End Development</h4>
+                <p class="service-item-text">
+                  High-quality development of sites at the professional level.
+                </p>
+              </div>
+            </li>
+            <li class="service-item">
+              <div class="service-icon-box">
+                <img src="./assets/images/icon-dev.svg" alt="Web development icon" width="40">
+              </div>
+              <div class="service-content-box">
+                <h4 class="h4 service-item-title">Python, js scripts</h4>
+                <p class="service-item-text">
+                  I make high-quality scripts in Python, js.
+                </p>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </article>
+      <article class="resume" data-page="resume">
+        <header>
+          <h2 class="h2 article-title">Resume</h2>
+        </header>
+        <section class="timeline">
+          <div class="title-wrapper">
+            <div class="icon-box">
+              <ion-icon name="book-outline"></ion-icon>
+            </div>
+            <h3 class="h3">Education</h3>
+          </div>
+          <ol class="timeline-list">
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title">School years</h4>
+              <span>2013 — 2024</span>
+              <p class="timeline-text">
+                School years... In 2019, I dramatically wanted to become a website and app developer.
+                I started learning different technologies and developing in front-end.
+              </p>
+            </li>
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title">Front-end dev lessons</h4>
+              <span>2021 — 2021 (1.06.2021)</span>
+              <p class="timeline-text">
+                I took an online course on frontend development,
+                it was a great experience for me as I learned a lot of new things and made new friends.
+              </p>
+            </li>
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title">Starting Back-End development</h4>
+              <span>2022 — 2024</span>
+              <p class="timeline-text">
+                Again, I drastically wanted to get into backend development
+                and started learning this area of development through various online courses on the internet.
+              </p>
+            </li>
+          </ol>
+        </section>
+        <section class="timeline">
+          <div class="title-wrapper">
+            <div class="icon-box">
+              <ion-icon name="book-outline"></ion-icon>
+            </div>
+            <h3 class="h3">Experience</h3>
+          </div>
+          <ol class="timeline-list">
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title">First project</h4>
+              <span>2022</span>
+              <p class="timeline-text">
+                In 2022, I got my first project through a Kwork. It was not that big a project, but I learned a lot of
+                useful things.
+              </p>
+            </li>
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title">Several medium and large projects</h4>
+              <span>2023 - 2024</span>
+              <p class="timeline-text">
+                In 2023 - 2024 I received several projects with Kwork. I learned a lot of things and dealt with some
+                problems.
+              </p>
+            </li>
+            <li class="timeline-item">
+              <h4 class="h4 timeline-item-title">TG bots</h4>
+              <span>2023 - 2024</span>
+              <p class="timeline-text">
+                And finally we got to my telegram bots. I have several of them.
+              </p>
+              <p class="timeline-text">
+                1: https://t.me/GifFinder_robot
+              </p>
+              <p class="timeline-text">
+                2: https://t.me/Wikipedia_shitbot  (<a href="https://github.com/kamolgks/">Source</a>)
+              </p>
+              <p class="timeline-text">
+                3: https://t.me/weatherv_robot (<a href="https://github.com/kamolgks/">Source</a>)
+              </p>
+              <p class="timeline-text">
+                4: https://t.me/fkamolgks_bot
+              </p>
+            </li>
+          </ol>
+        </section>
+        <section class="skill">
+          <h3 class="h3 skills-title">My skills</h3>
+          <ul class="skills-list content-card">
+            <li class="skills-item">
+              <div class="title-wrapper">
+                <h5 class="h5">Front-End</h5>
+                <data value="70">70%</data>
+              </div>
+              <div class="skill-progress-bg">
+                <div class="skill-progress-fill" style="width: 70%;"></div>
+              </div>
+            </li>
+            <li class="skills-item">
+              <div class="title-wrapper">
+                <h5 class="h5">Back-End</h5>
+                <data value="65">65%</data>
+              </div>
+              <div class="skill-progress-bg">
+                <div class="skill-progress-fill" style="width: 65%;"></div>
+              </div>
+            </li>
+            <li class="skills-item">
+              <div class="title-wrapper">
+                <h5 class="h5">Several scripts</h5>
+                <data value="75">75%</data>
+              </div>
+              <div class="skill-progress-bg">
+                <div class="skill-progress-fill" style="width: 75%;"></div>
+              </div>
+            </li>
+            <li class="skills-item">
+              <div class="title-wrapper">
+                <h5 class="h5">telegram bots</h5>
+                <data value="75">75%</data>
+              </div>
+              <div class="skill-progress-bg">
+                <div class="skill-progress-fill" style="width: 75%;"></div>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </article>
     </div>
+  </main>
+  <script src="./assets/js/script.js"></script>
+  <script>
+    // page navigation variables
+    const navigationLinks = document.querySelectorAll("[data-nav-link]");
+    const pages = document.querySelectorAll("[data-page]");
+
+    // add event to all nav link
+    for (let i = 0; i < navigationLinks.length; i++) {
+      navigationLinks[i].addEventListener("click", function () {
+
+        for (let i = 0; i < pages.length; i++) {
+          if (this.innerHTML.toLowerCase() === pages[i].dataset.page) {
+            pages[i].classList.add("active");
+            navigationLinks[i].classList.add("active");
+            window.scrollTo(0, 0);
+          } else {
+            pages[i].classList.remove("active");
+            navigationLinks[i].classList.remove("active");
+          }
+        }
+
+      });
+    }
+  </script>
+
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
 </body>
+
 </html>
+
+<!-- <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const navbarLinks = document.querySelectorAll('[data-nav-link]');
+    const contentSections = document.querySelectorAll('[data-page]');
+
+    navbarLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        const targetPage = link.dataset.navLink;
+        contentSections.forEach(section => {
+          section.classList.remove('active');
+        });
+        document.querySelector(`[data-page="${targetPage}"]`).classList.add('active');
+      });
+    });
+  });
+</script> -->
