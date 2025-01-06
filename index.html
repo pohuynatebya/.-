@@ -6,7 +6,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portfolio of Kamolgks</title>
-  <link rel="shortcut icon" href="https://pngset.com/images/ranime-logo-high-resolution-reddit-anime-comics-book-manga-helmet-transparent-png-1612963.png" type="image/x-icon">
+  <link rel="shortcut icon"
+    href="https://pngset.com/images/ranime-logo-high-resolution-reddit-anime-comics-book-manga-helmet-transparent-png-1612963.png"
+    type="image/x-icon">
   <link rel="stylesheet" href="./assets/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +26,7 @@
         </figure>
         <div class="info-content">
           <h1 class="name" title="Kamoliddin Tukhtaboev">Kamoliddin Tuxtaboev</h1>
-          <p class="title">Developer</p>
+          <p class="title">Full-stack developer</p>
         </div>
         <button class="info_more-btn" data-sidebar-btn>
           <span>Show Contacts</span>
@@ -59,16 +61,17 @@
             <div class="contact-info">
               <p class="contact-title">Birthday</p>
               <time datetime="03-18">March 18</time>
+              <p id="timer" class="t"></p>
             </div>
           </li>
         </ul>
         <div class="separator"></div>
         <ul class="social-list">
-          <!-- <li class="social-item">
+          <li class="social-item">
             <a href="https://instagram.com/kamolgks/" class="social-link">
               <ion-icon name="logo-instagram"></ion-icon>
             </a>
-          </li> -->
+          </li>
           <li class="social-item">
             <a href="https://github.com/kamolgks/" class="social-link">
               <ion-icon name="logo-github"></ion-icon>
@@ -101,13 +104,17 @@
           <h2 class="h2 article-title">About me</h2>
         </header>
         <section class="about-text">
-          <p>As a full-stack developer with four years of experience under my belt, I specialize in crafting modern
+          <p>
+            As a full-stack developer with four years of experience under my belt, I specialize in crafting modern
             websites and their server-side counterparts. My expertise lies in Python development, creating Telegram
             bots, and scripting on a wide array of topics. I take great joy in my work and approach each task with
-          precision and enthusiasm.</p>
-          <p>Currently, I'm freelancing and am open to a variety of tasks. I'm always ready to learn new technologies
+            precision and enthusiasm.
+          </p>
+          <p>
+            Currently, I'm freelancing and am open to a variety of tasks. I'm always ready to learn new technologies
             and further develop my skills in my field. For any collaboration proposals, feel free to reach out to me via
-          Telegram.</p>
+            Telegram or via <a href="mailto:kamolgks@gmail.com">email</a>
+          </p>
         </section>
         <section class="service">
           <h3 class="h3 service-title">What I'm doing</h3>
@@ -160,7 +167,8 @@
               <h4 class="h4 timeline-item-title">School years</h4>
               <span>2013 — 2024</span>
               <p class="timeline-text">
-                I went to school №166. Reflecting on my school years, I recall a pivotal moment in 2019 when I was gripped by a profound desire to become a website developer.
+                I went to school №166. Reflecting on my school years, I recall a pivotal moment in 2019 when I was
+                gripped by a profound desire to become a website developer.
               </p>
             </li>
             <li class="timeline-item">
@@ -220,7 +228,8 @@
             <li class="timeline-item">
               <h4 class="h4 timeline-item-title">GitHub projects</h4>
               <span>2024</span>
-              <p class="timeline-text">I made several open-source mini-projects and posted them on GitHub. Among them:</p>
+              <p class="timeline-text">I made several open-source mini-projects and posted them on GitHub. Among them:
+              </p>
               <p class="timeline-text">- Password generator using Flask</p>
               <p class="timeline-text">- Telegram bot to view the weather in your city</p>
               <p class="timeline-text">- Bot for getting Wikipedia articles on the entered topic</p>
@@ -239,8 +248,8 @@
           <ul class="skills-list content-card">
             <li class="skills-item">
               <div class="title-wrapper">
-                <h5 class="h5">Web Development</h5>
-                <data value="60">60%</data>
+                <h5 class="h5">Front-End</h5>
+                <data value="80">80%</data>
               </div>
               <div class="skill-progress-bg">
                 <div class="skill-progress-fill" style="width: 70%;"></div>
@@ -249,25 +258,25 @@
             <li class="skills-item">
               <div class="title-wrapper">
                 <h5 class="h5">Back-End</h5>
-                <data value="65">65%</data>
+                <data value="75">75%</data>
               </div>
               <div class="skill-progress-bg">
                 <div class="skill-progress-fill" style="width: 65%;"></div>
               </div>
             </li>
-            <li class="skills-item">
+            <!-- <li class="skills-item">
               <div class="title-wrapper">
                 <h5 class="h5">Scripts</h5>
-                <data value="50">50%</data>
+                <data value="90">90%</data>
               </div>
               <div class="skill-progress-bg">
                 <div class="skill-progress-fill" style="width: 75%;"></div>
               </div>
-            </li>
+            </li> -->
             <li class="skills-item">
               <div class="title-wrapper">
-                <h5 class="h5">telegram bots</h5>
-                <data value="70">70%</data>
+                <h5 class="h5">Telegram Bots</h5>
+                <data value="90">0%</data>
               </div>
               <div class="skill-progress-bg">
                 <div class="skill-progress-fill" style="width: 75%;"></div>
@@ -303,7 +312,27 @@
     }
   </script>
 
+  <script>
+    /**
+     * Updates the timer display with the time left until the birthday.
+     * The timer counts down from the birthday date to the current date.
+     * The time left is displayed in the format "X days, Y hours, Z minutes, K seconds".
+     */
+    const birthDay = new Date('March 18, 2025').getTime();
+    const timer = document.getElementById('timer');
+    
+    function countDown() {
+      const now = Date.now();
+      const timeLeft = birthDay - now;
+
+      timer.innerHTML = `${Math.floor(timeLeft / 1000 / 60 / 60 / 24)}d, ${Math.floor(timeLeft / 1000 / 60 / 60) % 24}h, ${Math.floor(timeLeft / 1000 / 60) % 60}m, ${Math.floor(timeLeft / 1000) % 60}s`;
+    }
+
+    setInterval(countDown, 1000);
+  </script>
+
   <script src="./assets/js/script.js"></script>
+  <!-- <script src="/assets/js/b-day.js"></script> -->
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </body>
