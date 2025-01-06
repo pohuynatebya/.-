@@ -475,6 +475,11 @@ main {
   width: calc(100% - 46px);
 }
 
+.contact-info .t {
+  color: var(--white-1);
+  font-size: 10px;
+}
+
 .contact-title {
   color: var(--light-gray-70);
   font-size: var(--fs-8);
