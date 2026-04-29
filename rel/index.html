@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Религиоведение</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #080c14;
+    --surface:   #0f1623;
+    --card:      #141c2e;
+    --border:    #1e2d47;
+    --accent:    #00d4ff;
+    --accent2:   #7c3aed;
+    --success:   #10b981;
+    --danger:    #ef4444;
+    --warning:   #f59e0b;
+    --text:      #e2e8f0;
+    --muted:     #64748b;
+    --radius:    14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── MESH BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 10%, rgba(0,212,255,.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 90%, rgba(124,58,237,.07) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  #app { position: relative; z-index: 1; }
+
+  /* ── SETUP SCREEN ── */
+  #setup-screen {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 2rem;
+    animation: fadeIn .5s ease;
+  }
+
+  .logo {
+    font-size: 3rem; margin-bottom: .5rem;
+    filter: drop-shadow(0 0 20px rgba(0,212,255,.4));
+  }
+
+  h1 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-align: center; margin-bottom: .5rem;
+  }
+
+  .subtitle {
+    color: var(--muted); font-size: .95rem; text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .setup-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    width: 100%; max-width: 480px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+  }
+
+  .field-label {
+    font-size: .8rem; font-weight: 600; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: .75rem;
+  }
+
+  .pill-group {
+    display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 2rem;
+  }
+
+  .pill {
+    padding: .45rem 1rem; border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface); color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .85rem; cursor: pointer;
+    transition: all .2s;
+  }
+
+  .pill:hover { border-color: var(--accent); color: var(--accent); }
+  .pill.active { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
+
+  .custom-row {
+    display: flex; gap: .75rem; align-items: center; margin-bottom: 2rem;
+  }
+
+  .custom-row input {
+    flex: 1; padding: .65rem 1rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text);
+    font-family: 'Sora', sans-serif; font-size: .95rem;
+    outline: none; transition: border-color .2s;
+  }
+
+  .custom-row input:focus { border-color: var(--accent); }
+
+  .custom-row input::placeholder { color: var(--muted); }
+
+  .btn-primary {
+    width: 100%; padding: .9rem;
+    background: linear-gradient(135deg, var(--accent), #0ea5e9);
+    border: none; border-radius: var(--radius);
+    color: #000; font-family: 'Sora', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    cursor: pointer; letter-spacing: .03em;
+    transition: all .25s; position: relative; overflow: hidden;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,212,255,.35);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .total-badge {
+    text-align: center; margin-top: 1.25rem;
+    color: var(--muted); font-size: .85rem;
+  }
+
+  .total-badge span {
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace; font-weight: 600;
+  }
+
+  /* ── QUIZ SCREEN ── */
+  #quiz-screen {
+    display: none; flex-direction: column;
+    min-height: 100vh; padding: 0;
+    animation: fadeIn .4s ease;
+  }
+
+  /* Header bar */
+  .quiz-header {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(8,12,20,.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: .9rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+
+  .prog-wrap { flex: 1; }
+
+  .prog-meta {
+    display: flex; justify-content: space-between;
+    font-size: .78rem; color: var(--muted); margin-bottom: .4rem;
+  }
+
+  .prog-bar {
+    height: 4px; background: var(--surface);
+    border-radius: 999px; overflow: hidden;
+  }
+
+  .prog-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #a78bfa);
+    border-radius: 999px;
+    transition: width .4s cubic-bezier(.4,0,.2,1);
+  }
+
+  .timer-display {
+    display: flex; align-items: center; gap: .4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem; font-weight: 500;
+    color: var(--text); white-space: nowrap;
+  }
+
+  .timer-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--success);
+    animation: pulse 1s infinite;
+  }
+
+  .timer-dot.warning { background: var(--warning); }
+  .timer-dot.danger  { background: var(--danger); }
+
+  @keyframes pulse {
+    0%,100% { opacity:1; transform: scale(1); }
+    50%      { opacity:.5; transform: scale(.85); }
+  }
+
+  .btn-finish-early {
+    padding: .45rem .9rem; border-radius: 999px;
+    background: transparent; border: 1px solid var(--danger);
+    color: var(--danger); font-family: 'Sora', sans-serif;
+    font-size: .78rem; cursor: pointer;
+    transition: all .2s; white-space: nowrap;
+  }
+
+  .btn-finish-early:hover { background: rgba(239,68,68,.12); }
+
+  /* Question area */
+  .quiz-body {
+    flex: 1; padding: 2rem 1.5rem;
+    max-width: 780px; margin: 0 auto; width: 100%;
+  }
+
+  .q-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .78rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin-bottom: .9rem;
+  }
+
+  .q-counter span { color: var(--accent); font-weight: 600; }
+
+  .q-text {
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    font-weight: 500; line-height: 1.65;
+    margin-bottom: 1.75rem;
+    color: var(--text);
+  }
+
+  /* Answers */
+  .answers { display: flex; flex-direction: column; gap: .6rem; }
+
+  .ans-btn {
+    display: flex; align-items: center; gap: .9rem;
+    padding: .9rem 1.1rem;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); cursor: pointer;
+    transition: all .18s; text-align: left;
+    font-family: 'Sora', sans-serif; font-size: .92rem;
+    color: var(--text); position: relative; overflow: hidden;
+  }
+
+  .ans-btn::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(0,212,255,.04));
+    opacity: 0; transition: opacity .2s;
+  }
+
+  .ans-btn:not(.locked):hover {
+    border-color: var(--accent);
+    transform: translateX(3px);
+  }
+
+  .ans-btn:not(.locked):hover::before { opacity: 1; }
+
+  .ans-letter {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .8rem; font-weight: 600;
+    color: var(--muted); flex-shrink: 0;
+    transition: all .2s;
+  }
+
+  .ans-btn:not(.locked):hover .ans-letter {
+    border-color: var(--accent); color: var(--accent);
+  }
+
+  /* States */
+  .ans-btn.correct {
+    background: rgba(16,185,129,.12);
+    border-color: var(--success);
+    transform: translateX(3px);
+  }
+
+  .ans-btn.correct .ans-letter {
+    background: var(--success); border-color: var(--success);
+    color: #fff;
+  }
+
+  .ans-btn.wrong {
+    background: rgba(239,68,68,.1);
+    border-color: var(--danger);
+  }
+
+  .ans-btn.wrong .ans-letter {
+    background: var(--danger); border-color: var(--danger);
+    color: #fff;
+  }
+
+  .ans-btn.reveal-correct {
+    background: rgba(16,185,129,.07);
+    border-color: rgba(16,185,129,.4);
+  }
+
+  .ans-btn.reveal-correct .ans-letter {
+    border-color: var(--success); color: var(--success);
+  }
+
+  .ans-btn.locked { cursor: default; }
+
+  .feedback-icon {
+    margin-left: auto; font-size: 1.1rem; flex-shrink: 0;
+  }
+
+  /* Feedback bar */
+  .feedback-bar {
+    margin-top: 1.2rem; padding: .75rem 1rem;
+    border-radius: var(--radius); font-size: .88rem;
+    font-weight: 500; display: none; align-items: center; gap: .6rem;
+  }
+
+  .feedback-bar.correct {
+    display: flex;
+    background: rgba(16,185,129,.12);
+    border: 1px solid rgba(16,185,129,.3);
+    color: #4ade80;
+  }
+
+  .feedback-bar.wrong {
+    display: flex;
+    background: rgba(239,68,68,.1);
+    border: 1px solid rgba(239,68,68,.25);
+    color: #f87171;
+  }
+
+  /* Navigation */
+  .quiz-nav {
+    position: sticky; bottom: 0;
+    background: rgba(8,12,20,.92);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex; justify-content: space-between; align-items: center;
+    max-width: 780px; margin: 0 auto; width: 100%;
+  }
+
+  /* hack: full-width sticky footer */
+  .quiz-nav-wrap {
+    position: sticky; bottom: 0;
+    background: rgba(8,12,20,.92);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    z-index: 10;
+  }
+
+  .quiz-nav-inner {
+    max-width: 780px; margin: 0 auto;
+    padding: 1rem 1.5rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  .btn-nav {
+    display: flex; align-items: center; gap: .5rem;
+    padding: .6rem 1.2rem; border-radius: 999px;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text); font-family: 'Sora', sans-serif;
+    font-size: .88rem; cursor: pointer; transition: all .2s;
+  }
+
+  .btn-nav:hover:not(:disabled) {
+    border-color: var(--accent); color: var(--accent);
+    box-shadow: 0 0 12px rgba(0,212,255,.15);
+  }
+
+  .btn-nav:disabled { opacity: .3; cursor: not-allowed; }
+
+  .btn-nav-primary {
+    padding: .6rem 1.5rem; border-radius: 999px;
+    background: linear-gradient(135deg, var(--accent), #0ea5e9);
+    border: none; color: #000; font-family: 'Sora', sans-serif;
+    font-size: .88rem; font-weight: 700; cursor: pointer;
+    transition: all .2s;
+  }
+
+  .btn-nav-primary:hover { transform: scale(1.03); }
+
+  .q-dots {
+    display: flex; gap: .3rem; flex-wrap: wrap; max-width: 200px;
+    justify-content: center;
+  }
+
+  .q-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border); transition: all .3s;
+  }
+
+  .q-dot.current { background: var(--accent); transform: scale(1.4); }
+  .q-dot.answered-ok { background: var(--success); }
+  .q-dot.answered-fail { background: var(--danger); }
+  .q-dot.skipped { background: var(--muted); }
+
+  /* ── RESULTS SCREEN ── */
+  #results-screen {
+    display: none; flex-direction: column; align-items: center;
+    justify-content: center; min-height: 100vh; padding: 2rem;
+    animation: fadeIn .5s ease;
+  }
+
+  .result-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: calc(var(--radius) * 1.5);
+    padding: 2.5rem; width: 100%; max-width: 540px;
+    box-shadow: 0 24px 80px rgba(0,0,0,.5);
+    text-align: center;
+  }
+
+  .score-ring {
+    position: relative; width: 140px; height: 140px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .score-ring svg { transform: rotate(-90deg); }
+
+  .score-ring-bg {
+    fill: none; stroke: var(--border); stroke-width: 8;
+  }
+
+  .score-ring-fill {
+    fill: none; stroke-width: 8; stroke-linecap: round;
+    transition: stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1);
+  }
+
+  .score-ring-text {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+
+  .score-pct {
+    font-size: 2rem; font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .score-label { font-size: .72rem; color: var(--muted); text-transform: uppercase; }
+
+  .result-title {
+    font-size: 1.5rem; font-weight: 700; margin-bottom: .5rem;
+  }
+
+  .result-subtitle { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+
+  .stats-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: .75rem; margin-bottom: 2rem;
+  }
+
+  .stat-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1rem;
+  }
+
+  .stat-box-val {
+    font-size: 1.6rem; font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: .15rem;
+  }
+
+  .stat-box-val.green { color: var(--success); }
+  .stat-box-val.red   { color: var(--danger); }
+  .stat-box-val.blue  { color: var(--accent); }
+  .stat-box-val.purple{ color: #a78bfa; }
+
+  .stat-box-label {
+    font-size: .75rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .06em;
+  }
+
+  .btn-restart {
+    width: 100%; padding: .85rem;
+    background: linear-gradient(135deg, var(--accent2), #a78bfa);
+    border: none; border-radius: var(--radius);
+    color: #fff; font-family: 'Sora', sans-serif;
+    font-size: .95rem; font-weight: 700; cursor: pointer;
+    transition: all .25s; margin-bottom: .75rem;
+  }
+
+  .btn-restart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(124,58,237,.35);
+  }
+
+  .btn-secondary {
+    width: 100%; padding: .75rem;
+    background: transparent; border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--muted); font-family: 'Sora', sans-serif;
+    font-size: .9rem; cursor: pointer; transition: all .2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--text); color: var(--text);
+  }
+
+  /* ── REVIEW SCREEN ── */
+  #review-screen {
+    display: none; flex-direction: column;
+    min-height: 100vh; padding: 1.5rem;
+    animation: fadeIn .4s ease;
+  }
+
+  .review-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+
+  .review-header h2 { font-size: 1.4rem; font-weight: 700; }
+
+  .review-list { display: flex; flex-direction: column; gap: 1rem; max-width: 780px; margin: 0 auto; width: 100%; }
+
+  .review-item {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.2rem;
+  }
+
+  .review-item.ok { border-left: 3px solid var(--success); }
+  .review-item.fail { border-left: 3px solid var(--danger); }
+  .review-item.skip { border-left: 3px solid var(--muted); }
+
+  .review-q { font-size: .92rem; margin-bottom: .75rem; line-height: 1.5; }
+  .review-a { font-size: .82rem; display: flex; align-items: flex-start; gap: .4rem; }
+  .review-a.your { color: var(--danger); margin-bottom: .3rem; }
+  .review-a.correct { color: var(--success); }
+
+  /* Utility */
+  @keyframes fadeIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+
+  @keyframes popIn {
+    0% { transform: scale(.85); opacity:0; }
+    70% { transform: scale(1.04); }
+    100% { transform: scale(1); opacity:1; }
+  }
+
+  .pop { animation: popIn .3s ease forwards; }
+
+  .hidden { display: none !important; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══════════════ SETUP ═══════════════ -->
+  <div id="setup-screen">
+    <div class="logo">🕌</div>
+    <h1>Религиоведение</h1>
+    <p class="subtitle">Тест-тренажёр</p>
+
+    <div class="setup-card">
+      <p class="field-label">Количество вопросов</p>
+      <div class="pill-group" id="preset-pills">
+        <button class="pill" onclick="selectPreset(10)">10</button>
+        <button class="pill" onclick="selectPreset(20)">20</button>
+        <button class="pill active" onclick="selectPreset(30)">30</button>
+        <button class="pill" onclick="selectPreset(50)">50</button>
+        <button class="pill" onclick="selectPreset(100)">100</button>
+        <button class="pill" onclick="selectPreset(0)">Все</button>
+      </div>
+
+      <p class="field-label">Или введи своё число</p>
+      <div class="custom-row">
+        <input type="number" id="custom-count" placeholder="Например: 40" min="1">
+      </div>
+
+      <button class="btn-primary" onclick="startQuiz()">▶&nbsp; Начать тест</button>
+      <p class="total-badge">Всего в базе: <span id="total-q">0</span> вопросов</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════ QUIZ ═══════════════ -->
+  <div id="quiz-screen" style="display:none; flex-direction:column;">
+
+    <div class="quiz-header">
+      <div class="prog-wrap">
+        <div class="prog-meta">
+          <span id="hdr-q-pos">Вопрос 1 из 30</span>
+          <span id="hdr-score-live">✓ 0</span>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+      <div class="timer-display">
+        <div class="timer-dot" id="timer-dot"></div>
+        <span id="timer-val">00:00</span>
+      </div>
+      <button class="btn-finish-early" onclick="finishEarly()">Завершить</button>
+    </div>
+
+    <div class="quiz-body">
+      <div class="q-counter">Вопрос <span id="q-idx">1</span> / <span id="q-total">30</span></div>
+      <div class="q-text" id="q-text"></div>
+      <div class="answers" id="answers-wrap"></div>
+      <div class="feedback-bar" id="feedback-bar">
+        <span id="feedback-icon"></span>
+        <span id="feedback-text"></span>
+      </div>
+    </div>
+
+    <div class="quiz-nav-wrap">
+      <div class="quiz-nav-inner">
+        <button class="btn-nav" id="btn-prev" onclick="navigate(-1)">← Назад</button>
+        <div class="q-dots" id="q-dots"></div>
+        <button class="btn-nav" id="btn-next" onclick="navigate(1)">Далее →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ RESULTS ═══════════════ -->
+  <div id="results-screen" style="display:none; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:2rem; animation: fadeIn .5s ease;">
+
+    <div class="result-card">
+      <div class="score-ring">
+        <svg viewBox="0 0 120 120" width="140" height="140">
+          <circle class="score-ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="score-ring-fill" id="score-circle" cx="60" cy="60" r="52"
+            stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+        </svg>
+        <div class="score-ring-text">
+          <div class="score-pct" id="res-pct">0%</div>
+          <div class="score-label">результат</div>
+        </div>
+      </div>
+
+      <div class="result-title" id="res-title">Отличный результат!</div>
+      <div class="result-subtitle" id="res-sub">Тест завершён</div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-box-val green" id="res-correct">0</div>
+          <div class="stat-box-label">Правильно</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-val red" id="res-wrong">0</div>
+          <div class="stat-box-label">Неверно</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-val blue" id="res-skipped">0</div>
+          <div class="stat-box-label">Пропущено</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-val purple" id="res-time">00:00</div>
+          <div class="stat-box-label">Время</div>
+        </div>
+      </div>
+
+      <button class="btn-restart" onclick="showReview()">📋 Разбор ошибок</button>
+      <button class="btn-secondary" onclick="goSetup()">↩ Новый тест</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════ REVIEW ═══════════════ -->
+  <div id="review-screen" style="display:none; flex-direction:column; min-height:100vh; padding:1.5rem; animation: fadeIn .4s ease;">
+    <div class="review-header" style="max-width:780px; margin:0 auto; width:100%;">
+      <h2>📋 Разбор ошибок</h2>
+      <button class="btn-secondary" style="width:auto; padding:.5rem 1.2rem;" onclick="goSetup()">↩ Заново</button>
+    </div>
+    <div class="review-list" id="review-list"></div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  QUESTIONS DATABASE
+// ══════════════════════════════════════════
+const QUESTIONS = [
+  {q:"Основатель Даосизма",ans:["Мао Цзэдун","Чжуан Чжо","Конфуций","Лао-Цзы"],c:3},
+  {q:"Ками это:",ans:["Это верховный бог Японии","Это самураи-герои","Это духи, божества","Это главный храм синтоизма"],c:2},
+  {q:"Таинства это:",ans:["Таинственная мистика","Культовые действия в христианстве","Скрытные колдовские действия","Гадания на картах Таро"],c:1},
+  {q:"Самой высшей кастой считались:",ans:["Кшатрии","Брахманы","Вайшьи","Шудры"],c:1},
+  {q:"Индуизм возник в Индии в период времени:",ans:["В I в. н.э.","Между II и VIII вв. н.э.","Между II и I вв. до н.э.","Между I и V вв. н.э."],c:2},
+  {q:"Почему ученики Конфуция изучали старинные книги?",ans:["Чтобы научиться читать","Чтобы научиться писать","Чтобы получить похвалу от учителя","Чтобы приобщиться к мудрости предков"],c:3},
+  {q:"Как называется в переводе на русский язык вторая сура в Коране?",ans:["Корова","Люди","Рассвет","Женщины"],c:0},
+  {q:"Для сословной структуры восточных обществ характерна:",ans:["Подвижность социальной структуры","Нет правильного ответа","Строгая иерархия наследуемых статусов","Круговая порука всех сословий"],c:2},
+  {q:"Формами православного культа НЕ является:",ans:["Принесение в жертву животных","Чтение молитв","Возжигание свечей","Поклонение мощам"],c:0},
+  {q:"Хадиджу называют «матерью мусульман», потому что:",ans:["У неё первым родился сын","Она первая из людей приняла ислам","Она первая жена пророка Мухаммада","Она родила шестерых детей Пророку"],c:2},
+  {q:"Самое большое количество мусульман в мире относится к богословско-правовой школе:",ans:["Ханбалия","Маликия","Шафиия","Ханафия"],c:3},
+  {q:"Куда Мария положила младенца Христа после рождения?",ans:["На стол","В люльку","В ясли","В корзину"],c:2},
+  {q:"В какой статье Закона «О свободе совести» говорится, что религия в Республике Узбекистан отделена от государства?",ans:["Статья 19","Статья 5","Статья 4","Статья 7"],c:3},
+  {q:"Главная причина конфликта суннитов и шиитов?",ans:["Вопрос о преемственности власти","Отношение к неверным","О методах толкования Корана","Отношение к браку и женщинам"],c:0},
+  {q:"Христос превращает воду в вино по чьей просьбе?",ans:["Матери","Апостолов","Личная инициатива","Жениха и невесты"],c:0},
+  {q:"В какой период возникли ранние формы религий?",ans:["12 тыс. лет – 5 тыс. лет","40 тыс. лет – 12 тыс. лет","1 млн. лет – 500 тыс. лет","400 тыс. лет – 40 тыс. лет"],c:1},
+  {q:"В какой статье Закона говорится, что право на светское образование обеспечивается гражданам РУз независимо от их отношения к религии?",ans:["8 статья","28 статья","18 статья","45 статья"],c:0},
+  {q:"Махабхарата – это:",ans:["Служители культа в древней Индии","Древнеиндийский эпос на санскрите — одно из крупнейших литературных произведений в мире","Ранняя редакция канона Трипитаки","Название одной из легендарных династий в Индии"],c:1},
+  {q:"Как называется преступная деятельность, направленная на захват государственной власти путём разжигания паники и страха?",ans:["Терроризм","Экуменизм","Фанатизм","Фундаментализм"],c:0},
+  {q:"Что вы понимаете под понятием «религиозная секта»?",ans:["Религиозная группа, имеющая своё учение, отличное от господствующей церкви","То, что ведёт людей на правильный путь","Строгая доктрина для верующих","Продвижение традиционных религиозных ценностей"],c:0},
+  {q:"В каком Евангелии звучат слова призыва Иисуса: «Идите и научите все народы, крестя их во имя Отца и Сына и Святого Духа»?",ans:["Евангелия от Матфея","Евангелия от Луки","Евангелия от Марка","Евангелия от Иоанна"],c:0},
+  {q:"Вето — это:",ans:["Наложение запрета на решение, принятое уполномоченным органом","Система взглядов на религию, подтверждающая законы религии","Публичная исповедь верующего","Учение о вере той или иной религии"],c:0},
+  {q:"Выберите, что относится к элементам религии:",ans:["Вера в загробную жизнь","Внешнеполитические отношения","Экономические отношения","Подчинение человека законам"],c:0},
+  {q:"Что по-древнегречески означает слово «Евангелие»?",ans:["Благое слово","Благая истина","Благое знание","Благая весть"],c:3},
+  {q:"Раздел «Трипитаки», называемый «Корзиной наставлений», содержит проповеди и изречения Будды:",ans:["«Миманса-питака»","«Сутра-питака»","«Винная-питака»","«Абхидама-питака»"],c:1},
+  {q:"Кодзики – это:",ans:["Название японских священных гор","Синтоистская богиня","Одна из древних книг синтоизма","Японская богиня"],c:2},
+  {q:"Из какого рода происходил Конфуций?",ans:["Мелких землевладельцев","Из знатного рода Кун","Из знатного рода Минг","Из рода императора"],c:1},
+  {q:"Содержащее учение Будды и его авторитетные толкования изложено в:",ans:["Трипитаке","Хинаяне","Трехаваде","Талмуде"],c:0},
+  {q:"Что означает в переводе с санскрита историческое название индуизма «санатана-дхарма»?",ans:["Долгий путь","Праведный путь","Всеобщий закон","Вечная религия"],c:3},
+  {q:"Христианство зародилось:",ans:["В Западной Азии в I в. н.э.","В Западной Российской империи в III в. н.э.","В Римской империи в I в. н.э.","В Передней Азии в I в. н.э."],c:2},
+  {q:"К какой функции религии относится определение норм и принципов поведения человека?",ans:["Интегративная","Продуктивная","Регулятивная","Информационная"],c:2},
+  {q:"Что такое Сунна?",ans:["Священное предание, излагающее примеры жизни пророка Мухаммада","Руководство для всей мусульманской общины","Все ответы верны","Второй после Корана источник исламского права"],c:0},
+  {q:"Папское государство именуется:",ans:["Монако","Андорра","Ватикан","Сан-Марино"],c:2},
+  {q:"Соблюдение установленных предписаний – это вид поклонения, порождённый:",ans:["Религиозным чувством","Религиозным сознанием","Верой","Традициями"],c:2},
+  {q:"Следование действиям и высказываниям Пророка Мухаммада – это:",ans:["Мубах","Халал","Сунна","Харам"],c:2},
+  {q:"«Дети» Муна свободное время посвящают изучению:",ans:["Дианетики","Принципа","Бхагавад-Гита как она есть","Мантры"],c:1},
+  {q:"С кем на Прощальной трапезе «Тайное Вечерие» встречался Иисус Христос?",ans:["С апостолами","С уважаемыми иудеями","С Иудой","С Понтием Пилатом"],c:0},
+  {q:"Какая сура Корана является самой длинной?",ans:["Сура «Иа-Син»","Сура «аль-Кавсар»","Сура «аль-Бакара»","Сура «ат-Тауба»"],c:2},
+  {q:"Раздел религиоведения, изучающий общественные основы религии, общественные закономерности её возникновения:",ans:["Психология религии","Философия религии","Социология религии","Феноменология религии"],c:2},
+  {q:"Когда проблема терроризма стала одной из главных угроз общественно-политической жизни Узбекистана (теракты в Ташкенте)?",ans:["15 мая 2005 года","11 сентября 2001 года","16 февраля 1999 года","29 марта 2004 года"],c:2},
+  {q:"Троллинг – это:",ans:["Размещение в сети Интернет провокационных статей с целью развития конфликта между пользователями","Уродливое существо из скандинавской мифологии","Огнедышащее чудовище","Политическая идеология, возникшая после Первой мировой войны"],c:0},
+  {q:"Фарз – это:",ans:["Действие, которое считается обязательным","Действие, которое считается необязательным","Действие, которое считается строго запрещённым","Действие, которое считается желательным"],c:0},
+  {q:"Грех — это:",ans:["Совершение ритуальных действий вне храмового здания","Переход из православия в католичество","Чтение священных книг вне храмов","Группа и классификация пороков, нарушающих законы той или иной религии"],c:3},
+  {q:"Когда была принята последняя редакция Закона РУз «О свободе совести и религиозных организациях»?",ans:["26 августа 2020 года","6 июня 2019 года","5 июля 2021 года","6 июля 2021 года"],c:3},
+  {q:"Кто является основателем секты «Аум Сенрикё»?",ans:["Мирза Хусейн Али","Сан Мён Мун","Абхай Чаранад","Сёко Асахара"],c:3},
+  {q:"Социальное идеологическое движение в Западной Европе, приведшее к образованию протестантизма:",ans:["Ренессанс","Радикализм","Сецессионизм","Реформация"],c:3},
+  {q:"Названный в честь дерева, под которым сидел Будда — что означает «Бодхи»?",ans:["Высшая мудрость достигается благодаря человеческому потенциалу","Нет правильного ответа","Любимый слон Будды","Город в Тибете"],c:0},
+  {q:"Какая древняя религия легла в основу христианства?",ans:["Сикхизм","Ислам","Буддизм","Иудаизм"],c:3},
+  {q:"На протяжении какого времени (в годах) пророк Мухаммад получал откровения в Мекке?",ans:["15","23","10","12"],c:1},
+  {q:"(с греч. ξένος «чужой» + φόβος «страх») — страх и неприятие всего чужого, перетекающие во враждебность. Найдите слово:",ans:["Клаустрофобия","Ксенофобия","Гипсофобия","Терроризм"],c:1},
+  {q:"Для нетрадиционных религий характерно:",ans:["Синкретический характер вероучения","Авторитарный лидер","Оппозиционность к господствующим ценностям","Все ответы верны"],c:3},
+  {q:"Инквизиция это:",ans:["Монашеский орден","Папская гвардия","Трибунал католической церкви для борьбы с ересями","Клуб любителей экстремальных ситуаций"],c:2},
+  {q:"Жрец в древней ведийской религии и в позднейшем индуизме:",ans:["Каддиш","Амитабх","Брахман","Будда"],c:2},
+  {q:"Рамаяна – это:",ans:["Название одной из династий в Индии","Название одежды у индийских женщин","Древнеиндийский эпос на санскрите","Праздник, проводимый в индийской семье"],c:2},
+  {q:"Что собой представляет организация «Свидетели Иеговы»?",ans:["Община","Национальная религия","Секта","Племя"],c:2},
+  {q:"Имя ангела, который звуками трубы возвестит о воскрешении мёртвых для Страшного суда:",ans:["Микаил","Азраил","Джабраил","Исрафил"],c:3},
+  {q:"На своём мистическом пути суфий проходит четыре этапа. Какой из них лишний?",ans:["Тарикат","Шариат","Марифат","Имамат"],c:3},
+  {q:"Главный праздник для православия:",ans:["Пасха","Крещение","Покров Пресвятой Богородицы","Венчание"],c:0},
+  {q:"Всевышний защитил пророков от:",ans:["От сумы и невзгод","Бед и несчастий","Болезней и смертей","Низких качеств, дурных поступков, недостойных мыслей"],c:3},
+  {q:"Единственное чудо Иисуса, описанное во всех четырёх Евангелиях:",ans:["Насыщение 5000 человек","Усмирение морской бури","Исцеление прокажённого","Хождение по воде"],c:0},
+  {q:"Религия возникла:",ans:["В попытках объяснить таинственные и грозные проявления природы","Так как древние люди думали, что это поможет в охоте","Так как древние люди боялись встретить оборотней","Для усмирения оборотней"],c:0},
+  {q:"Назовите высшую христианскую добродетель:",ans:["Мудрость","Любовь","Молитва","Смирение"],c:1},
+  {q:"Где находится могила известного учёного Мухаммада ибн Исмаила Каффаля Шаши?",ans:["В Самарканде","В Термезе","В Ташкенте","В Бухаре"],c:2},
+  {q:"В арабском языке слово «куфр» означает «сокрытие». На сколько видов он разделяется?",ans:["4","3","6","2"],c:0},
+  {q:"Когда был принят Закон «О свободе совести и вероисповедания» в Узбекистане (последняя редакция)?",ans:["В 1991 году","В 2023 году","В 2021 году","В 1998 году"],c:2},
+  {q:"Национализм – это:",ans:["Идеология национального превосходства, которая превозносит одну нацию над другими","Идеология сопротивления насилию","Насильственные действия против гражданского населения","Теория, утверждающая превосходство одной расы"],c:0},
+  {q:"Секта Алавиты появилась в IX в. и обожествляли кого?",ans:["Обожествляли Али и ставили его чуть ли не рядом с Аллахом","Обожествляли всех 4 халифов","Обожествляли Абу Бакра","Обожествляли Мусу"],c:0},
+  {q:"Христианское таинство, символизирующее прощение «первородного греха» и вступление в лоно церкви через воду – это:",ans:["Крещение","Миропомазание","Елеосвящение","Причащение"],c:0},
+  {q:"Ислам, буддизм, индуизм:",ans:["Мировые религии, родившиеся на Востоке","Религии, возникшие до наступления новой эры","Религии в Индии XVI–XVIII вв.","Все ответы верны"],c:0},
+  {q:"Какой из символов является частью буддийской традиции?",ans:["Цветок лотоса","Ветка цветущей вишни","Голубь","Рыба-ангел"],c:0},
+  {q:"Какого харизматичного лидера секты суд признал виновным в терактах и в 2004 году приговорил к смертной казни?",ans:["Чарльза Тейт Рассела","Раджниша Чандра Мохана","Рона Хаббарда","Сёко Асахару"],c:3},
+  {q:"Ангелы, которые будут допрашивать в могиле:",ans:["Ракиб и Атид","Ридван и Малик","Микаил и Катибин","Мункар и Накир"],c:3},
+  {q:"«Белое братство» было основано в 1990 г. на Украине бывшим комсомольским работником (укажите):",ans:["Марина Цветаева","Девид Берг","Сан Мён Муном","Марина Цвигун"],c:3},
+  {q:"Теология это:",ans:["Процесс обретения веры","Учение о Боге","Обучение в духовном учебном заведении","Богиня наук"],c:1},
+  {q:"Сколько каст существовало в Древней Индии?",ans:["4","5","6","7"],c:0},
+  {q:"Когда и где возник бахаизм?",ans:["В Иране в XIX веке","В Турции в ХХ веке","В Аравии в IX веке","В Иране в X веке"],c:0},
+  {q:"В какое время года родился Пророк Мухаммад?",ans:["Осень","Лето","Весна","Зима"],c:2},
+  {q:"Ангел, который забирает души творений Всевышнего:",ans:["Джабраил","Микаиль","Азраиль","Исрафил"],c:2},
+  {q:"Голгофа – это:",ans:["Холм, на котором был распят Иисус Христос","Гора, на которой Иисус Христос обрёл святость","Холм, на котором Иисус Христос воскрес","Холм, на котором ели хлеб и рыбок"],c:0},
+  {q:"Что такое «символ веры в христианстве»?",ans:["Иное название Евангелия","Одна из канонизированных книг","Принятые на вселенских соборах основы христианского вероучения","Иное название Библии"],c:2},
+  {q:"Какая группа НЕ относится к группе библейских религий?",ans:["Иудаизм","Христианство","Ислам","Синтоизм"],c:3},
+  {q:"Спецификой сепарационного типа государственно-церковных отношений является:",ans:["Отделение церкви от государства","Социальное партнёрство между церковью и государством","Всё перечисленное","Враждебное отношение к церкви"],c:0},
+  {q:"Кем приходился царедворцу человек, которого исцелил Иисус Христос?",ans:["Отцом","Женой","Сыном","Братом"],c:2},
+  {q:"Раздел «Трипитаки», называемый «Корзиной дисциплинарных правил», описывает правила поведения для монахов:",ans:["«Абхидама-питака»","«Вайшешика-питака»","«Винная-питака»","«Миманса-питака»"],c:2},
+  {q:"Мировоззренческая функция религии состоит в:",ans:["Изучении мировоззрения религиозного человека","Сравнении мировоззрений людей разных религий","Формировании мировоззрения, противоположного научному","Приведении мировоззрения в соответствие с основами вероучения"],c:3},
+  {q:"Предметом курса религиоведения является:",ans:["Закономерности возникновения, развития и функционирования религии, её многообразные феномены","Процесс превращения человека в личность","Система общих теоретических взглядов на мир","Социальные отношения и закономерности общества"],c:0},
+  {q:"В 313 году н.э. император Константин Великий издал закон, который признавал христианство законной религией в Римской империи:",ans:["Миланский закон","Вселенский закон","Миланский эдикт","Вселенская грамота"],c:2},
+  {q:"Что именуют пантеоном?",ans:["Иерархическую систему всех божеств в политеистических религиях","Здание, где проходят богослужения у протестантов","Кафедру, с которой читают проповеди католики","Иерархическую систему священнослужителей РПЦ"],c:0},
+  {q:"Как называется орган высшей власти в христианской Церкви, решения которого имеют статус непогрешимых?",ans:["Вселенские соборы","Христианские вердикты","Христианские законы","Всё написано в Евангелиях"],c:0},
+  {q:"Религиозные отношения это:",ans:["Безграничное послушание","Отношения в духовной сфере","Субординация","Подчинение без воли"],c:1},
+  {q:"«Задувание», «затухание», прекращение страдания, освобождение от перерождения – это:",ans:["Ступа","Сутра","Сансара","Нирвана"],c:3},
+  {q:"Это течение возникло в Судане в 80–90-х годах XIX века:",ans:["Махдизм","Монизм","Бехаизм","Ахмедизм"],c:0},
+  {q:"Какова главная цель христианина в жизни?",ans:["Спасение мира","Сохранение мира","Спасение души","Откровение от верующего"],c:2},
+  {q:"Каковы обязанности ангела Джабраила в исламе?",ans:["Вовремя подать сигнал о страшном суде","Передавать божественные повеления","Приводить в исполнение приказ о смерти","Наблюдать за вселенной"],c:1},
+  {q:"С точки зрения ислама, религия – это:",ans:["Вера, установленная Богом для упорядочения жизни","Вера, дающая знания о цели создания людей","Вера, дающая знания о способах поклонения Творцу","Все перечисленное"],c:3},
+  {q:"В какой статье Закона «О свободе совести» говорится о том, что «Государство выступает гарантом мирного сосуществования конфессий»?",ans:["Статья 18","Статья 7","Статья 4","Статья 65"],c:1},
+  {q:"Когда был принят Указ Президента РУз об утверждении Национальной стратегии по борьбе с экстремизмом на 2021–2026 годы?",ans:["2 февраля 2016 года","1 декабря 2000 года","1 июля 2021 года","15 июля 2021 года"],c:2},
+  {q:"Кто является создателем «Единственной религии»?",ans:["Виктор Хутев","Чарльз Тейт Рассел","Дэвид Берг","Раджниш Чандра Мохан"],c:3},
+  {q:"Закончите словосочетание «астрономическое событие» религиозного значения — Вифлеемская …",ans:["Вифлеемская заря","Вифлеемская ночь","Вифлеемская звезда","Вифлеемская комета"],c:2},
+  {q:"Сколько лет было Пророку Мухаммаду, когда ему было ниспослано первое откровение?",ans:["30","25","40","50"],c:2},
+  {q:"Чем занимался Матфей до того, как стал евангелистом?",ans:["Солдатом","Сборщиком налогов","Рабом","Строителем"],c:1},
+  {q:"Когда в Узбекистане был принят Закон «О борьбе с терроризмом»?",ans:["10 января 2001","5 сентября 1998","1 мая 1998","15 декабря 2000"],c:3},
+  {q:"В каком из религиозных учений существует понятие «Семи смертных грехов»?",ans:["В христианских учениях","В исламских учениях","Таких грехов не существует","В буддийских учениях"],c:0},
+  {q:"«Луньюй» переводится как:",ans:["Общения и выводы","Рассуждения и беседы","Слово и речь","Высказывание и диалог"],c:1},
+  {q:"Какая из перечисленных религий является направлением-течением в буддизме?",ans:["Махавира","Махаяна","Минкан","Сингон"],c:1},
+  {q:"Как назывались кочевые арабы?",ans:["Бедуины","Степняки","Кипчаки","Нет правильного ответа"],c:0},
+  {q:"Понятие, охватывающее всё социальное и культурное, передающееся от поколения к поколению:",ans:["Церемония","Ритуал","Традиция","Праздники"],c:2},
+  {q:"Характерные признаки секты:",ans:["Деление верующих на мирян и духовенство","Нет правильного ответа","Фиксированное членство, изоляция от мира, навязывание разрыва с прежним окружением","Сохранение общественного порядка"],c:2},
+  {q:"К какой функции религии относится поиск верующим утешения в моменты отчаяния?",ans:["Компенсаторная","Воспитательная","Мировоззренческая","Культуротранслирующая"],c:0},
+  {q:"На мусульманина возложены пять обязанностей. Какая из них НЕ является мусульманской?",ans:["Ограничения (аскеза)","Пост (саум)","Молитва (салат)","Милосердие (садака)"],c:0},
+  {q:"Основу, фундамент религии составляет:",ans:["Традиции","Вероучение","Обычаи","Святилища"],c:1},
+  {q:"Та обязанность, которую в соответствии с шариатом необходимо выполнять беспрекословно, называется:",ans:["Ваджиб","Мандуб","Фарз","Мубах"],c:2},
+  {q:"Наибольшим достижением третьего халифа стало:",ans:["Развитие внешних торговых отношений","Усиление политики халифата","Письменное закрепление единого текста Корана","Введение религиозно-правовых предписаний"],c:2},
+  {q:"Крещение Иисуса Христа совершилось:",ans:["В реке Хеврон","В реке Иордан","В реке Вифлеем","В реке Тигр"],c:1},
+  {q:"Как называется тип государственно-церковных отношений, для которых характерно враждебное отношение к церкви?",ans:["Сепарационный тип","Сегрегационный тип","Кооперационный тип","Все ответы верны"],c:0},
+  {q:"Согласно библейскому рассказу, змей в Едемском саду вступает с Евой в разговор по какому поводу?",ans:["О наговоре на Адама","О вкусной еде","О запретном плоде","О бриллиантовом кольце"],c:2},
+  {q:"В каком году и где было образовано движение «Братья-мусульмане»?",ans:["1839 г. в Сирии","1936 г. в Ираке","1928 г. в Египте","1992 г. в Узбекистане"],c:2},
+  {q:"Как христианство относится к монашеству?",ans:["Признаёт и женское и мужское монашество","Признаёт только женское монашество","Признаёт только мужское монашество","Монашество отменено в ХХ веке"],c:0},
+  {q:"Как называется журнал, издаваемый организацией «Свидетели Иеговы» более чем на 104 языках мира?",ans:["«Спасение»","«Во имя господа»","«Сторожевая башня»","«Благое дело»"],c:2},
+  {q:"Какова 3-я благородная истина учения буддизма?",ans:["Существование — это страдание","Существует прекращение страдания — нирвана","Существует причина страдания — желание","Существует путь к прекращению страдания — Восьмеричный путь"],c:1},
+  {q:"Кто из сподвижников сопровождал Пророка во время хиджры в Ясриб?",ans:["Его сопровождал дядя Абу Талиб","Его сопровождал Абу Бакр ас-Сыддик","Его сопровождали его дети","Его сопровождали близкие мекканцы"],c:1},
+  {q:"Реформация — это:",ans:["Движение за коренную реформу католической церкви, в ходе которого возник протестантизм","Широкое антикатолическое движение в Европе XVI в.","Система воспитательно-образовательных мероприятий","Социально-политическое движение XVI в. против феодализма"],c:0},
+  {q:"Первоначально христианство было одной из сект:",ans:["Иудаизма","Даосизма","Индуизма","Зороастризма"],c:0},
+  {q:"Последствия принятия арабами ислама:",ans:["Установлены правила поведения и обязанности, общие для всех мусульман","Мусульмане были обязаны верить, но обряды могли не выполнять","Мусульманин мог поклоняться и другим богам","Нет правильного ответа"],c:0},
+  {q:"Атеизм — это:",ans:["Нет правильного ответа","Мировоззрение, отрицающее природу","Мировоззрение, отрицающее существование сверхъестественных сил","Мировоззрение, отрицающее человека"],c:2},
+  {q:"Наследие знаний Абу Ханифы было передано им его ученикам:",ans:["Большая часть письменно","Только в письменной форме","Почти всё в устной форме","Половина устно, половина письменно"],c:2},
+  {q:"«Каменный век» — период истории человечества, который получил такое название потому что:",ans:["Первобытные люди строили жилища из камня","Первобытные люди изготавливали из камня памятники богам","Первобытные люди изготавливали орудия труда из камня","Древние люди высекали бюсты богам"],c:2},
+  {q:"Межконфессиональный диалог — это:",ans:["Собрание для людей разных национальностей","Выработка принципов сосуществования различных религиозных конфессий","Круглый стол для мирных переговоров","Беседа религиозных архитекторов"],c:1},
+  {q:"Когда впервые в Узбекистане был принят Закон «О свободе совести и религиозных организациях»?",ans:["1998 г. 14 июня","1991 г. 5 июля","1991 г. 14 июня","2023 г. 5 июля"],c:0},
+  {q:"Слово «киберпространство» впервые было введено:",ans:["Уильямом Гибсоном","Эрнестом Резерфордом","Джеймсом Чедвиком","Дж. Томсоном"],c:0},
+  {q:"«Дианетика» — Священное Писание:",ans:["Учения Виссариона","Сайентологии","Бахаизма","Церкви Единения"],c:1},
+  {q:"Будда — это больше, чем просто имя. Что это значит?",ans:["Примудренный","Знающий","Просветлённый","Великий мудрец"],c:2},
+  {q:"Религия в Индии, вероучение которой состоит в том, что душа может вселяться в различные тела:",ans:["Ведизм","Джайнизм","Буддизм","Ламаизм"],c:1},
+  {q:"Икона это:",ans:["Рождественская открытка","Портреты иудейских священнослужителей","Изображение святых","Картина на библейские мотивы"],c:2},
+  {q:"Догматы, отсутствующие в исламе:",ans:["О божественном предопределении","О Чистилище","О Страшном Суде","О воскрешении из мёртвых"],c:1},
+  {q:"В какой статье Закона «О свободе совести» говорится о противодействии насаждению религиозных идей, угрожающих общественному порядку?",ans:["В 16 статье","В 25 статье","В 5 статье","В 10 статье"],c:2},
+  {q:"Как называется мост, через который в Судный день пройдут все люди (в рай или в ад)?",ans:["Иснад","Сират","Сабиль","Тарик"],c:1},
+  {q:"В какой статье Конституции РУз говорится о свободе совести?",ans:["16 ст.","35 ст.","43 ст.","34 ст."],c:1},
+  {q:"Какое чудо НЕ совершал Пророк Иисус Христос?",ans:["Возвращал зрение слепым","Воскрешал людей из мёртвых","Ходил по воде","Поднимался на священную гору и разговаривал с богом"],c:3},
+  {q:"Как называется направление в исламе, утверждающее необходимость возвращения к истокам подлинной мусульманской веры?",ans:["Исмаилизм","Матурудизм","Мутазализм","Джафаризм"],c:1},
+  {q:"Возникновение протестантизма явилось следствием:",ans:["Первой французской революции","Первой мировой войны","Решения Вселенского собора","Движения Реформации"],c:3},
+  {q:"Какую организацию для руководства католическим миссионерством учредил папа Григорий XV в 1622 г.?",ans:["Конгрегацию пропаганды веры","Адвентисты 7 дня","Лигу наций","Общество божественной жизни"],c:0},
+  {q:"Как звали правителя Иудеи во время рождения Христа?",ans:["Кесарь","Пилат","Ирод","Август"],c:2},
+  {q:"Что из нижеперечисленного является одним из аспектов Благородного Восьмеричного Пути?",ans:["Мысли умного буддиста","Правильная речь","Усердие в труде","Слепое принятие"],c:1},
+  {q:"Как звали кормилицу Пророка Мухаммада?",ans:["Халима ас-Саадийя","Сауда бинт Замъа","Сумая бинт Хайят","Хадиджа бинт Хувалийд"],c:0},
+  {q:"Какая религия является лишней в авраамических религиях?",ans:["Ислам","Иудаизм","Христианство","Буддизм"],c:3},
+  {q:"Что такое Рождество?",ans:["Альтернативное название Нового Года","Праздник Деда Мороза","День рождения Санта-Клауса","Праздник рождения Иисуса Христа"],c:3},
+  {q:"Выберите из списка функцию религии:",ans:["Объективная","Регулятивная","Продуктивная","Репродуктивная"],c:1},
+  {q:"Что из перечисленного НЕ является функцией религии?",ans:["Продуктивная","Культуротранслирующая","Регулятивная","Воспитательная"],c:0},
+  {q:"Тории – это:",ans:["Химический элемент 3-й группы","Ворота без створок в синтоистском святилище","Ангел при вратах рая в синтоизме","Ангел-советник в сикхизме"],c:1},
+  {q:"В классификацию того, что возложено на каждого правоверного мусульманина, входит:",ans:["Мубах","Харам, макрух","Все перечисленное","Фард, ваджиб и сунна"],c:3},
+  {q:"Секта (с лат. secta от sequi) означает:",ans:["Стоять впереди","Следовать за кем-то","Возглавлять правых","Выбирать кого-то"],c:1},
+  {q:"В каком веке христианство стало государственной религией в Римской империи?",ans:["До I в. до н.э.","В IV в. н.э.","Во II в. н.э.","В V в. н.э."],c:1},
+  {q:"Имя предателя-изменника, который предал Иисуса Христа:",ans:["Иоанн","Иуда","Андрей","Матфей"],c:1},
+  {q:"Кто создал первый сайт в интернете?",ans:["Эрнест Резерфорд","Джеймс Максвелл","Альберт Эйнштейн","Тим Бернерс Ли"],c:3},
+  {q:"Что такое Интернет?",ans:["Это набор веб-страниц, идентифицированных общим доменным именем","Всемирная компьютерная сеть для хранения, обработки и передачи информации","Нет правильного ответа","Широко распространённая взаимосвязанная цифровая технология"],c:1},
+  {q:"Укажите определение слова «Тафсир»:",ans:["День Божьего суда","Толкование Корана и сунны, дисциплина исламского богословия","Арабская поэзия со священными текстами","Подлинный Коран на арабском языке"],c:1},
+  {q:"Сколько в настоящее время в Узбекистане действует общин «Бахай»?",ans:["8","2","12","6"],c:3},
+  {q:"Кто поднёс дары младенцу Христу?",ans:["Пастухи","Мудрецы","Родственники","Все желающие"],c:1},
+  {q:"В чём заключается главное условие спасения в буддизме?",ans:["Магические ритуалы","Избавление от желаний","Послушание воле Божьей","Самоистязание"],c:1},
+  {q:"Функции религии – это:",ans:["Способы действий религии в обществе","Задачи религиозных объединений","Характер религиозных организаций","Культовая практика"],c:0},
+  {q:"Какова основная обязанность шудр?",ans:["Поиск святой истины","Духовное совершенствование","Изучение вед","Обслуживание членов более высоких каст"],c:3},
+  {q:"Крещение – это:",ans:["Защита от болезней и неудач","Обряд вступления в общину верующих","Исправление судьбы","Духовное рождение"],c:3},
+  {q:"В каком году Мухаммаду, по преданиям, явился архангел Джабраил?",ans:["647","632","610 г.","650"],c:2},
+  {q:"Соблюдение запретов – это:",ans:["Основа мировоззрения в религии","Особенности данной религии","Принцип вероучения","Воздержание от определённых действий"],c:3},
+  {q:"В какой статье Конституции РУз говорится, что свобода совести гарантируется для всех и недопустимо принудительное насаждение религиозных взглядов?",ans:["19 статья","35 статья","25 статья","42 статья"],c:1},
+  {q:"Сколько ступеней содержит Восьмеричный путь избавления от страданий в буддизме?",ans:["8","10","12","18"],c:0},
+  {q:"Свобода совести – это:",ans:["Право граждан исповедовать или не исповедовать какую-либо религию","Недоверие граждан к религии и право выступать против неё","Потребность граждан в вере в одну религию","Право людей верить в свою лучшую национальность"],c:0},
+  {q:"Годы жизни Конфуция:",ans:["551 – 479 гг. до н.э.","479 – 551 гг. н.э.","550 – 400 гг. до н.э.","500 – 480 гг. до н.э."],c:0},
+  {q:"Высшее просветление — это:",ans:["Молитва","Восьмеричный путь","Сансара","Нирвана"],c:3},
+  {q:"Как называлась столица, построенная Аббасидами?",ans:["Багдад","Дамаск","Абу-Даби","Медина"],c:0},
+  {q:"Какой Архангел возвестил Деве Марии благую весть о будущем рождении Христа?",ans:["Рафаил","Гавриил","Давид","Микаиль"],c:1},
+  {q:"Какое из деяний НЕ имеет отношения к исламу?",ans:["Зякят (налог) в пользу бедных","Обязательная пятикратная молитва","Жертвоприношения бетилам","Обязательный пост (ураза)"],c:2},
+  {q:"Какой из элементов НЕ относится к намазу?",ans:["Земной поклон","Поясной поклон","Чтение Корана","Чтение хадисов"],c:3},
+  {q:"В каком городе распяли Иисуса?",ans:["В Вифлееме","В Иерусалиме","В Назарете","В Вефсаиде"],c:1},
+  {q:"Аруахи – это:",ans:["Духи мёртвых, предки-покровители","Духи мёртвых тотемных животных","Духи неземного происхождения","Духи природных сил"],c:0},
+  {q:"В буддизме есть три фундаментальных учения. Какое из перечисленных является одним из них?",ans:["Все вещи возникают и исчезают","Глупость — человеческий порок","Если не знаете — лучше не говорите","Не кладите все яйца в одну корзину"],c:0},
+  {q:"Ками — это:",ans:["Название домашних храмов в Японии","Родовые божества в синтоизме","Священный город в Японии","Святилище в синтоизме"],c:1},
+  {q:"Как называется религиозное движение, начатое Мартином Лютером?",ans:["Инквизиция","Реформация","Контрреформация","Просвещение"],c:1},
+  {q:"Какое таинство связано с покаянием и отпущением грехов?",ans:["Причастие","Елеосвящение","Миропомазание","Исповедь"],c:3},
+  {q:"Как называются первые пять книг Ветхого Завета?",ans:["Евангелие","Пятикнижие Моисея","Притчи","Псалмы"],c:1},
+  {q:"Какая часть ислама регулирует нормы поведения мусульман в повседневной жизни?",ans:["Сунна","Тасаввуф","Шариат","Фикх"],c:2},
+  {q:"С какого времени ведётся летоисчисление по мусульманскому календарю?",ans:["С переселением Мухаммада","С избранием Мухаммада Пророком","С рождением Мухаммада","Со дня смерти Мухаммада"],c:0},
+  {q:"Какое учение является основным текстом, излагающим учение о гармонии с природой и пути Дао?",ans:["Ши цзин","Лунь юй","Дао дэ цзин","Чжуан-цзы"],c:2},
+  {q:"Взаимоуважение и миролюбие граждан в отношении лиц другой веры называется:",ans:["Религиозной толерантностью","Религиозной дискриминацией","Религиозной деятельностью","Религиозным плюрализмом"],c:0},
+  {q:"Каковы цели и функции международных религиозных организаций?",ans:["Межрелигиозный диалог и укрепление связей между конфессиями","Все ответы верны","Объединение верующих","Распространение вероучения"],c:1},
+  {q:"Какое имя евангелистов названо неверно?",ans:["Марк","Павел","Лука","Матфей"],c:1},
+  {q:"Что лишнее и НЕ входит в «7 смертных грехов»?",ans:["Лживость","Чревоугодие","Блуд","Гордость"],c:0},
+  {q:"Аскетически-мистическое направление в Исламе называется:",ans:["Магия","Суфизм","Йога","Тантризм"],c:1},
+  {q:"Макрух — это:",ans:["Неодобряемые поступки, деяния, которые не стоит совершать","Если захотеть, то можно обойти запреты","Одобряемые поступки","Все ответы верны"],c:0},
+  {q:"В иудаизме, христианстве, исламе человек, совершивший грех:",ans:["За грех надо постоянно наказывать","Погибнет, так как грех искупить нельзя","Может раскаяться и искупить грех","Заработает плохую карму"],c:2},
+  {q:"В какой религии существует «Догмат о богоизбранности»?",ans:["Христианства","Православия","Католицизма","Иудаизма"],c:3},
+  {q:"Сбор и анализ существующих хадисов был проведён для того, чтобы:",ans:["Посчитать общее количество хадисов","Отличить истинные (достоверные) от ложных (недостоверных)","Улучшить хадисы","Разделить их на темы"],c:1},
+  {q:"В исламе укажите вознаграждаемые действия, которые необходимо совершать каждому правоверному мусульманину:",ans:["Все перечисленное","Мустахаб","Сунна","Фард, ваджиб"],c:3},
+  {q:"Функция, которая способствует развитию письменности, книгопечатания, искусства, обеспечивает сохранение религиозной культуры:",ans:["Регулятивная","Культуротранслирующая","Интегрирующая","Компенсаторная"],c:1},
+  {q:"Высшее просветление — это (2):",ans:["Молитва","Сансара","Нирвана","Святой лик"],c:2},
+  {q:"Какой народ себя считает богоизбранным?",ans:["Индусы","Арабы","Иудеи","Китайцы"],c:2},
+  {q:"Ваххабизм как религиозно-политическое течение в суннитской ветви ислама сформировался в … веке:",ans:["В XV веке","В VII веке","В VIII веке","В XVIII веке"],c:3},
+  {q:"Какую практику используют многие группы, чтобы углубить связь с учением и убрать сомнения последователей?",ans:["Изоляция от внешнего мира","Открытие диалогов с другими культурами","Культурное разнообразие","Отказ от саморазвития"],c:0},
+  {q:"В какой религии говорят, что «рай находится под ногами наших матерей»?",ans:["Ислам","Иудаизм","Христианство","Буддизм"],c:0},
+  {q:"В учении Ислама эта сура является «сердцем Корана»:",ans:["Сура 24, аят 35 «Аят о свете»","Сура 2, аят 255 «Аль-Курсий»","Сура 112 «Аль-Ихлас»","Сура 36 «Иа-Син»"],c:3},
+  {q:"«Аум Синрикё» переводится как:",ans:["Единственная истина","Учение истины","Правильная истина","Японская истина"],c:1},
+  {q:"Какая проблема может возникнуть при изучении религии в интернете?",ans:["Отсутствие научного подхода","Проблема достоверности источников","Полное отсутствие религиозных сообществ","Сложности в технической реализации"],c:1},
+  {q:"Из скольких этапов состоит реализация Национальной стратегии РУз по борьбе с экстремизмом и терроризмом на 2021–2026 годы?",ans:["Из трёх этапов","Из пяти этапов","Из шести этапов","Из двух этапов"],c:0},
+  {q:"Прощальная трапеза Иисуса Христа с апостолами называется «Тайное Вечерие», почему?",ans:["За то, что считали его колдуном","Иудеи желали убить Христа","Он тайно показывал чудеса","Чтобы никто не покушался на их союз"],c:1},
+  {q:"Какое событие положило начало Великому расколу 1054 года?",ans:["Разделение Восточной и Западной церквей","Первый крестовый поход","Издание Миланского эдикта","Реформация"],c:0},
+  {q:"Какое чудо совершил Иисус Христос, чтобы подтвердить власть над природой?",ans:["Превратил воду в кровь","Остановил солнечное затмение","Остановил поток воды с гор","Успокоил бурю"],c:3},
+  {q:"Какая религиозная практика была важной частью миссионерства в христианстве?",ans:["Паломничество","Пост","Крещение","Вероисповедание"],c:2},
+  {q:"Гарантированное конституционное право граждан исповедовать любую религию или не исповедовать никакой — это:",ans:["Свобода исповедания","Свобода воли","Свобода совести","Свобода выбора"],c:2},
+  {q:"От лат. «missio» — «посылка, поручение». О каком явлении идёт речь?",ans:["Глобализация","Миссионерство","Прозелитизм","Модернизация"],c:1},
+  {q:"Какой термин часто используется для обозначения человека, покинувшего секту?",ans:["Проповедник","Отступник","Противник","Посвящённый"],c:1},
+];
+
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+let session = [];
+let current = 0;
+let answers  = {};   // index → chosen option index (or -1 = skipped)
+let timerSec = 0;
+let timerInterval = null;
+let selectedCount = 30;
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+document.getElementById('total-q').textContent = QUESTIONS.length;
+
+function selectPreset(n) {
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  selectedCount = n === 0 ? QUESTIONS.length : n;
+  event.target.classList.add('active');
+  document.getElementById('custom-count').value = '';
+}
+
+function startQuiz() {
+  const custom = parseInt(document.getElementById('custom-count').value);
+  let n = isNaN(custom) ? selectedCount : custom;
+  n = Math.max(1, Math.min(n, QUESTIONS.length));
+
+  // Shuffle & pick n questions
+  const shuffled = [...QUESTIONS].sort(() => Math.random() - .5);
+  session = shuffled.slice(0, n);
+  current = 0;
+  answers = {};
+  timerSec = 0;
+
+  document.getElementById('q-total').textContent = n;
+  buildDots();
+  renderQuestion();
+  updateHeader();
+
+  document.getElementById('setup-screen').style.display   = 'none';
+  document.getElementById('quiz-screen').style.display    = 'flex';
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('review-screen').style.display  = 'none';
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timerSec++;
+    updateTimer();
+  }, 1000);
+}
+
+// ══════════════════════════════════════════
+//  RENDER QUESTION
+// ══════════════════════════════════════════
+function renderQuestion() {
+  const q = session[current];
+  const ans = answers[current];
+
+  document.getElementById('q-idx').textContent = current + 1;
+  document.getElementById('q-text').textContent = q.q;
+
+  const wrap = document.getElementById('answers-wrap');
+  wrap.innerHTML = '';
+
+  const letters = ['A', 'B', 'C', 'D'];
+  q.ans.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'ans-btn';
+
+    const letter = document.createElement('span');
+    letter.className = 'ans-letter';
+    letter.textContent = letters[i];
+
+    const text = document.createElement('span');
+    text.textContent = opt;
+
+    btn.appendChild(letter);
+    btn.appendChild(text);
+
+    if (ans !== undefined) {
+      // already answered
+      btn.classList.add('locked');
+      if (i === q.c) {
+        btn.classList.add(ans === i ? 'correct' : 'reveal-correct');
+        const icon = document.createElement('span');
+        icon.className = 'feedback-icon';
+        icon.textContent = '✓';
+        btn.appendChild(icon);
+      } else if (i === ans && ans !== q.c) {
+        btn.classList.add('wrong');
+        const icon = document.createElement('span');
+        icon.className = 'feedback-icon';
+        icon.textContent = '✗';
+        btn.appendChild(icon);
+      }
+    } else {
+      btn.onclick = () => selectAnswer(i);
+    }
+
+    btn.style.animationDelay = (i * 0.05) + 's';
+    btn.classList.add('pop');
+    wrap.appendChild(btn);
+  });
+
+  // Feedback bar
+  const fb = document.getElementById('feedback-bar');
+  if (ans !== undefined) {
+    const correct = ans === q.c;
+    fb.className = 'feedback-bar ' + (correct ? 'correct' : 'wrong');
+    document.getElementById('feedback-icon').textContent = correct ? '✅' : '❌';
+    document.getElementById('feedback-text').textContent = correct
+      ? 'Верно!'
+      : `Правильный ответ: ${letters[q.c]}. ${q.ans[q.c]}`;
+  } else {
+    fb.className = 'feedback-bar';
+  }
+
+  updateDots();
+  updateNav();
+  updateHeader();
+}
+
+function selectAnswer(i) {
+  answers[current] = i;
+  renderQuestion();
+}
+
+// ══════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════
+function navigate(dir) {
+  const next = current + dir;
+  if (next < 0 || next >= session.length) return;
+  if (dir === 1 && answers[current] === undefined) {
+    // mark as skipped
+    answers[current] = -1;
+  }
+  current = next;
+  renderQuestion();
+}
+
+function updateNav() {
+  document.getElementById('btn-prev').disabled = current === 0;
+  const isLast = current === session.length - 1;
+  const nxt = document.getElementById('btn-next');
+  nxt.textContent = isLast ? 'Завершить →' : 'Далее →';
+  nxt.onclick = isLast ? showResults : () => navigate(1);
+}
+
+// ══════════════════════════════════════════
+//  DOTS
+// ══════════════════════════════════════════
+function buildDots() {
+  const wrap = document.getElementById('q-dots');
+  wrap.innerHTML = '';
+  const max = Math.min(session.length, 20);
+  for (let i = 0; i < max; i++) {
+    const d = document.createElement('div');
+    d.className = 'q-dot';
+    d.id = 'dot-' + i;
+    wrap.appendChild(d);
+  }
+}
+
+function updateDots() {
+  const max = Math.min(session.length, 20);
+  for (let i = 0; i < max; i++) {
+    const d = document.getElementById('dot-' + i);
+    if (!d) continue;
+    const a = answers[i];
+    d.className = 'q-dot' +
+      (i === current ? ' current' :
+       a === undefined ? '' :
+       a === -1 ? ' skipped' :
+       a === session[i].c ? ' answered-ok' : ' answered-fail');
+  }
+}
+
+// ══════════════════════════════════════════
+//  HEADER
+// ══════════════════════════════════════════
+function updateHeader() {
+  document.getElementById('hdr-q-pos').textContent =
+    `Вопрос ${current + 1} из ${session.length}`;
+
+  const answered = Object.values(answers).filter(v => v !== undefined && v !== -1).length;
+  const correct  = Object.keys(answers).filter(k => answers[k] === session[k]?.c).length;
+  document.getElementById('hdr-score-live').textContent = `✓ ${correct}`;
+
+  const pct = ((current + 1) / session.length) * 100;
+  document.getElementById('prog-fill').style.width = pct + '%';
+}
+
+// ══════════════════════════════════════════
+//  TIMER
+// ══════════════════════════════════════════
+function updateTimer() {
+  const m = String(Math.floor(timerSec / 60)).padStart(2, '0');
+  const s = String(timerSec % 60).padStart(2, '0');
+  document.getElementById('timer-val').textContent = `${m}:${s}`;
+  const dot = document.getElementById('timer-dot');
+  dot.className = 'timer-dot' +
+    (timerSec > 3600 ? ' danger' : timerSec > 1800 ? ' warning' : '');
+}
+
+function finishEarly() {
+  // mark remaining as skipped
+  for (let i = 0; i < session.length; i++) {
+    if (answers[i] === undefined) answers[i] = -1;
+  }
+  showResults();
+}
+
+// ══════════════════════════════════════════
+//  RESULTS
+// ══════════════════════════════════════════
+function showResults() {
+  clearInterval(timerInterval);
+
+  const total   = session.length;
+  const correct = Object.keys(answers).filter(k => answers[k] === session[k]?.c).length;
+  const wrong   = Object.keys(answers).filter(k => answers[k] !== undefined && answers[k] !== -1 && answers[k] !== session[k]?.c).length;
+  const skipped = Object.keys(answers).filter(k => answers[k] === -1).length;
+  const pct     = Math.round((correct / total) * 100);
+
+  document.getElementById('res-pct').textContent     = pct + '%';
+  document.getElementById('res-correct').textContent  = correct;
+  document.getElementById('res-wrong').textContent    = wrong;
+  document.getElementById('res-skipped').textContent  = total - correct - wrong;
+  const m = String(Math.floor(timerSec / 60)).padStart(2,'0');
+  const s = String(timerSec % 60).padStart(2,'0');
+  document.getElementById('res-time').textContent     = `${m}:${s}`;
+
+  let title = pct >= 90 ? '🏆 Отлично!' : pct >= 70 ? '👍 Хороший результат' : pct >= 50 ? '📚 Неплохо, но есть куда расти' : '💪 Нужно повторить материал';
+  document.getElementById('res-title').textContent = title;
+  document.getElementById('res-sub').textContent = `${correct} из ${total} вопросов`;
+
+  // Animate ring
+  const circ = 2 * Math.PI * 52;
+  const offset = circ * (1 - pct / 100);
+  const ring = document.getElementById('score-circle');
+  ring.style.stroke = pct >= 70 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#ef4444';
+  setTimeout(() => { ring.style.strokeDashoffset = offset; }, 100);
+
+  document.getElementById('quiz-screen').style.display    = 'none';
+  document.getElementById('results-screen').style.display = 'flex';
+  document.getElementById('review-screen').style.display  = 'none';
+}
+
+// ══════════════════════════════════════════
+//  REVIEW
+// ══════════════════════════════════════════
+function showReview() {
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+  const letters = ['A','B','C','D'];
+
+  session.forEach((q, i) => {
+    const userAns = answers[i];
+    const isCorrect = userAns === q.c;
+    const isSkipped = userAns === -1 || userAns === undefined;
+
+    if (isCorrect) return; // show only wrong + skipped
+
+    const item = document.createElement('div');
+    item.className = 'review-item ' + (isSkipped ? 'skip' : 'fail');
+
+    const qText = document.createElement('div');
+    qText.className = 'review-q';
+    qText.textContent = `${i+1}. ${q.q}`;
+    item.appendChild(qText);
+
+    if (!isSkipped) {
+      const yourA = document.createElement('div');
+      yourA.className = 'review-a your';
+      yourA.innerHTML = `✗ Ваш ответ: ${letters[userAns]}. ${q.ans[userAns]}`;
+      item.appendChild(yourA);
+    }
+
+    const corrA = document.createElement('div');
+    corrA.className = 'review-a correct';
+    corrA.innerHTML = `✓ Верный ответ: ${letters[q.c]}. ${q.ans[q.c]}`;
+    item.appendChild(corrA);
+
+    list.appendChild(item);
+  });
+
+  if (list.children.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--success);font-size:1.2rem;">🎉 Нет ошибок! Блестящий результат!</div>';
+  }
+
+  document.getElementById('quiz-screen').style.display    = 'none';
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('review-screen').style.display  = 'flex';
+}
+
+function goSetup() {
+  clearInterval(timerInterval);
+  document.getElementById('setup-screen').style.display   = 'flex';
+  document.getElementById('quiz-screen').style.display    = 'none';
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('review-screen').style.display  = 'none';
+}
+</script>
+</body>
+</html>
